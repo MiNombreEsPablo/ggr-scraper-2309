@@ -2,8 +2,8 @@
 
 Scraper program for GGR research
 
-[People's Daily](http://j.people.com.cn/)
+## [People's Daily](http://j.people.com.cn/)
 
 Topics:
-- 処理水: 3 result pages
-- 汚染水: 11 result pages
+- 処理水: 3 result pages. 23/30 articles
+- 汚染水: 11 result pages.
