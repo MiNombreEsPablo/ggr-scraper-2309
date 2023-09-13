@@ -34,7 +34,7 @@ class ParsingService
       source = '人民網日本語版' if source.empty?
 
       article_selectors = ['.txt_2 p', '#p_content p', '.txt_con3 p', '#wb_21 p', '.wb_31 p', '.wb_21 p',
-                           '.textContent p', '.p1_left p', '.j-d2txt p']
+                           '.textContent p', '.p1_left p', '.j-d2txt p', '.mainBox p']
       article_text, parsed = get_article_text(doc, article_selectors)
 
       author = get_author(article_text)
