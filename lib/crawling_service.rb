@@ -12,10 +12,10 @@ class CrawlingService
   attr_reader :results
 
   def initialize(attributes = {})
-    @search_topic = attributes[:search_topic] || '労働者の権利'
+    @search_topic = attributes[:search_topic] || '日本'
     @from = attributes[:from] || 1
     @to = attributes[:to] || 2
-    @total_pages = 1
+    @total_pages = 500
     @results = []
   end
 

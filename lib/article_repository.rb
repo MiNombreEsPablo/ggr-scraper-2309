@@ -44,6 +44,8 @@ class ArticleRepository
     total = @results.size
     processed = 0
     @results.each do |result|
+      next unless result[:parsed] == false
+
       p result[:url]
       add(result[:url], result[:title])
       processed += 1
