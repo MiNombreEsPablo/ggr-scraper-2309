@@ -12,10 +12,10 @@ class CrawlingService
   attr_reader :results
 
   def initialize(attributes = {})
-    @search_topic = attributes[:search_topic] || '日本'
-    @from = attributes[:from] || 1
-    @to = attributes[:to] || 2
-    @total_pages = 500
+    @search_topic = attributes[:search_topic] || '民主'
+    # @from = attributes[:from] || 1
+    # @to = attributes[:to] || 2
+    @total_pages = 40
     @results = []
   end
 
@@ -36,7 +36,7 @@ class CrawlingService
     # total_pages = @to - @from
     while index <= @total_pages
       puts "Currently reading page #{index}/#{@total_pages} (#{format('%.2f', 100 * index / @total_pages.to_f)}%)"
-      sleep 4
+      sleep 3
       html = browser.html
       doc = Nokogiri::HTML.parse(html, nil, 'utf-8')
       doc.css('ul li b a').each do |element|
