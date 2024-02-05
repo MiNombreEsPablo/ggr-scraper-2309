@@ -2,43 +2,54 @@
 
 require 'csv'
 
-input = './results/articles.csv'
-output = './results/formatted.csv'
-
 def split_article_text(text)
   return [] if text.nil?
 
   text.split("\n")
 end
 
-# def write_row(output_file, row, headers)
-#   new_row = {}
-#   headers.each_with_index do |header, i|
-#     new_row[header] = row[i]
-#   end
-#   output_file << new_row.values
-# end
+def write_row(output_csv, row, headers)
+  new_row = {}
+  headers.each_with_index do |header, i|
+    new_row[header] = row[i]
+  end
+  output_csv << new_row.values
+end
 
-# Open the input CSV file and create a new output CSV file
-CSV.open(input, 'r', encoding: 'UTF-8') do |input_file|
-  CSV.open(output, 'w', encoding: 'UTF-8') do |output_file|
-    # Read the headers from the input CSV file and write them to the output CSV file
-    headers = input_file.first
-    output_file << headers
+def process_rows(input_csv, output_csv)
+  headers = input_csv.first
+  output_csv << headers
 
-    # Loop through each row in the input CSV file
-    input_file.each do |row|
-      # Split the article_text into paragraphs
-      paragraphs = split_article_text(row[4])
+  seen_urls = []
 
-      # Loop through each paragraph and write it to the output CSV file
-      paragraphs.each do |paragraph|
-        next if paragraph.strip.empty?
+  input_csv.each do |row|
+    url = row[5]
 
-        new_row = row
-        new_row[4] = paragraph.strip
-        output_file << new_row
-      end
-    end
+    next if seen_urls.include?(url)
+
+    seen_urls << url
+
+    paragraphs = split_article_text(row[4])
+
+    process_paragraphs(row, paragraphs, output_csv, headers)
   end
 end
+
+def process_paragraphs(row, paragraphs, output_csv, headers)
+  paragraphs.each do |paragraph|
+    next if paragraph.strip.empty?
+
+    new_row = row.dup
+    new_row[4] = paragraph.strip
+    write_row(output_csv, new_row, headers)
+  end
+end
+
+# for when the file is run without app.rb
+input_csv = CSV.open('./results/articles.csv', 'r', encoding: 'UTF-8')
+output_csv = CSV.open('./results/formatted.csv', 'w', encoding: 'UTF-8')
+
+process_rows(input_csv, output_csv)
+
+input_csv.close
+output_csv.close
