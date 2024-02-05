@@ -8,12 +8,12 @@ require_relative 'parsing_service'
 require_relative 'crawling_service'
 
 class ArticleRepository
-  def initialize(file_path = './results/articles.csv')
+  def initialize(attributes = {})
     @articles = []
-    @path = file_path
+    @path = './results/articles.csv'
     load_csv
     @parser = ParsingService.new
-    @crawler = CrawlingService.new
+    @crawler = CrawlingService.new(search_topic: attributes[:search_topic], to: attributes[:to])
     @results = []
   end
 

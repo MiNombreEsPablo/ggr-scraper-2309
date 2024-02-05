@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Article
   attr_accessor :source, :date, :parsed, :article_text
   attr_reader :url, :title
