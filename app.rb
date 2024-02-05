@@ -16,7 +16,7 @@ repo.update if repo.non_parsed.any?
 puts 'Scraping process finished!'
 puts "#{repo.all.size} articles scraped."
 
-if repo.all.size < 17_000 && to.zero?
+if repo.all.size < 50_000 && to.zero?
   puts 'Running formatter...'
   require_relative 'lib/formatter'
   input_csv = CSV.open('./results/articles.csv', 'r', encoding: 'UTF-8')
