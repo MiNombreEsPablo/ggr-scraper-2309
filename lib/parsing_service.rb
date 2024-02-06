@@ -43,6 +43,8 @@ class ParsingService
                    url: url, author: author }
     rescue OpenURI::HTTPError => e
       content << { url: url, title: title, article_text: "HTTPError: #{e.message}" }
+    rescue SocketError => e
+      content << { url: url, title: title, article_text: "SocketError: #{e.message}" }
     end
 
     content.first
