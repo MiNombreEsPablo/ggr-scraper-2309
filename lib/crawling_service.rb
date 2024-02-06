@@ -6,15 +6,12 @@ gem 'webdrivers', '5.3.1'
 require 'nokogiri'
 require 'watir'
 require 'webdrivers'
-# require 'byebug'
 
 class CrawlingService
   attr_reader :results
 
   def initialize(attributes = {})
     @search_topic = attributes[:search_topic] || '西洋'
-    # @from = attributes[:from] || 1
-    # @to = attributes[:to] || 2
     @total_pages = attributes[:to]
     @results = []
   end
@@ -25,14 +22,7 @@ class CrawlingService
     url = "http://search.people.cn/jp/?keyword=#{@search_topic}}"
     browser.goto(url)
     sleep 2
-    # byebug
-    # search_bar = browser.text_field(id: 'keyword')
-    # search_button = browser.input(id: 'submitButton')
-    # search_bar.set(@search_topic)
-    # search_button.click
-    # sleep 2
-    # switch_tab(browser)
-    # update to if incoming from attributes is 0
+
     if @total_pages.zero?
       articles = browser.element(css: '.foreign_search').text.split[1].to_i
       result_pages = (articles / 10.to_f).round
@@ -40,24 +30,36 @@ class CrawlingService
       puts "Found articles: #{articles}"
       puts "Total pages: #{@total_pages}"
     end
+
     index = 1
+
     while index <= @total_pages
       puts "Currently reading page #{index}/#{@total_pages} (#{format('%.2f', 100 * index / @total_pages.to_f)}%)"
       sleep 3
       html = browser.html
       doc = Nokogiri::HTML.parse(html, nil, 'utf-8')
       doc.css('ul li b a').each do |element|
-        # byebug
         url = element['href']
         title = element.children.text
         @results << { title: title, url: url }
       end
+
       if index < @total_pages
-        next_btn = browser.span(class: 'page-next')
-        browser.execute_script('arguments[0].click();', next_btn)
+        begin
+          next_btn = browser.span(class: 'page-next')
+          next_btn.wait_until(timeout: 120, &:present?)
+          browser.execute_script('arguments[0].click();', next_btn)
+        rescue Watir::Exception::StaleElementReferenceError
+          next_btn = browser.span(class: 'page-next')
+          puts 'StaleElementReferenceError'
+          restore_progress(index)
+          retry
+        end
       end
+
       index += 1
     end
+
     browser.quit
     puts @results.size
     @results
@@ -77,5 +79,20 @@ class CrawlingService
     end
     # Switch focus to the new tab
     new_tab&.use
+  end
+
+  def restore_progress(index)
+    # broswer refresh
+    browser.refresh
+    sleep 3
+    # get back to index value
+    index.times do
+      next_btn = browser.span(class: 'page-next')
+      next_btn.wait_until(timeout: 120, &:present?)
+      browser.execute_script('arguments[0].click();', next_btn)
+      sleep 3
+    end
+    # continue from there
+    puts 'progress restored'
   end
 end
