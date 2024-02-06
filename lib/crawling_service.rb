@@ -53,8 +53,8 @@ class CrawlingService
         @results << { title: title, url: url }
       end
       if index < @total_pages
-        next_link = browser.span(class: 'page-next')
-        next_link.click
+        next_btn = browser.span(class: 'page-next')
+        browser.execute_script('arguments[0].click();', next_btn)
       end
       index += 1
     end
