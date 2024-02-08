@@ -19,9 +19,9 @@ class CrawlingService
   def crawl
     browser = Watir::Browser.new :chrome, options: { args: %w[--remote-debugging-port=9222] }
     browser.driver.manage.window.maximize
-    url = "http://search.people.cn/jp/?keyword=#{@search_topic}}"
+    url = "https://search.people.cn/jp/?keyword=#{@search_topic}"
     browser.goto(url)
-    sleep 2
+    sleep 10
 
     if @total_pages.zero?
       articles = browser.element(css: '.foreign_search').text.split[1].to_i
@@ -86,11 +86,12 @@ class CrawlingService
     browser.refresh
     sleep 3
     # get back to index value
-    index.times do
+    (index - 1).times do
       next_btn = browser.span(class: 'page-next')
       next_btn.wait_until(timeout: 120, &:present?)
       browser.execute_script('arguments[0].click();', next_btn)
-      sleep 3
+    rescue Watir::Wait::TimeoutError
+      restore_progress(index)
     end
     # continue from there
     puts 'progress restored'
