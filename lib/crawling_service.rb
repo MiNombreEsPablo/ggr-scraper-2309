@@ -18,10 +18,11 @@ class CrawlingService
 
   def crawl
     browser = Watir::Browser.new :chrome, options: { args: %w[--remote-debugging-port=9222] }
-    browser.driver.manage.window.maximize
+    # browser.driver.manage.window.maximize
     url = "https://search.people.cn/jp/?keyword=#{@search_topic}"
+    sleep 1
     browser.goto(url)
-    sleep 10
+    sleep 5
 
     if @total_pages.zero?
       articles = browser.element(css: '.foreign_search').text.split[1].to_i
