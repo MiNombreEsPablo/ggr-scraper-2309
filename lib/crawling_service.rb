@@ -26,7 +26,7 @@ class CrawlingService
 
     if @total_pages.zero?
       articles = browser.element(css: '.foreign_search').text.split[1].to_i
-      result_pages = (articles / 10.to_f).round
+      result_pages = (articles / 10.to_f).ceil
       @total_pages = result_pages < 1001 ? result_pages : 1000
       puts "Found articles: #{articles}"
       puts "Total pages: #{@total_pages}"
